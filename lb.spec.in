@@ -1,0 +1,41 @@
+%define debug_package %{nil}
+
+Name:		lb
+Version:	${LB_VERSION}
+Release:	1%{?dist}
+Summary:	LDAP benchmarking tool like an Apache Bench
+
+Group:		Development/Tools
+License:	MIT
+URL:		https://github.com/hamano/lb
+Source0:	https://github.com/hamano/lb/archive/%{version}.tar.gz
+
+BuildRequires:	golang
+BuildRequires:	openldap-devel
+
+%description
+lb is simple benchmarking tool for LDAP Server. This tool is designed to allow perform by command line such as Apache Bench.
+
+%prep
+%setup -q
+
+%build
+make deps
+make %{name} %{?_smp_mflags}
+mv %{name}-%{version} %{name}
+
+%install
+make install DESTDIR=%{buildroot}
+%{__install} -d %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+%{__install} -p -m 0644 %{_builddir}/%{name}-%{version}/README.md %{buildroot}%{_defaultdocdir}/%{name}-%{version}/
+%{__install} -p -m 0644 %{_builddir}/%{name}-%{version}/debian/copyright %{buildroot}%{_defaultdocdir}/%{name}-%{version}/
+%{__install} -p -m 0644 %{_builddir}/%{name}-%{version}/debian/changelog %{buildroot}%{_defaultdocdir}/%{name}-%{version}/
+
+%files
+/usr/bin/lb
+%doc %{_defaultdocdir}/%{name}-%{version}
+
+%changelog
+* Thu Aug  8 2019 Kazuhisa Hara <khara@sios.com>
+- Initial release
+
